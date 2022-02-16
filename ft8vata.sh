@@ -12,7 +12,8 @@ while :; do
   while (( (`date +%s` % 15) < 14 )); do
     sleep 1
   done
-  outFile="out-$(date '+%Y%m%d%H%M%S').wav"
+  #outFile="out-$(date '+%Y%m%d%H%M%S').wav"
+  outFile="out-$(date '+%S').wav"
   arecord -q -r 12000 -f S16_LE -c 1 -d 14 ${outFile}
   (jt9 -8 -d 3 "${outFile}" 2>/dev/null \
   | awk '($6 ~ /^R|^U[A-I]/) && ($7 ~ /^U[R-Z]/) {print}' >>ft8vata.txt) &
