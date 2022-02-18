@@ -11,23 +11,24 @@
 # 21.074 24.915 28.074 50.313 50.323
 
 trap 'exit' SIGINT
-trap 'rm tmp-??.wav' EXIT
+trap 'rm tmp_?.wav' EXIT
 
 while :; do
 
-  utcLabel=0
-  while (( ((utcLabel % 1000) % 150) < 147 )); do
-    utcLabel="$(date -u '+%y%m%d%H%M%S%1N')"
+  decisecUnixtime=0
+  while (( ((decisecUnixtime % 600) % 150) < 147 )); do
+    decisecUnixtime="$(date -u '+%s%1N')"
+    unixtime=$(( (decisecUnixtime / 10) + 1 ))
     sleep 0.1
   done
 
-  recFile="tmp-${utcLabel:10:2}.wav"
+  recFileName="tmp_$(( unixtime % 10 )).wav"
 
-  arecord -q -r 12000 -f S16_LE -c 1 -d 14 ${recFile}
+  arecord -q -r 12000 -f S16_LE -c 1 -d 14 ${recFileName}
 
-  ( jt9 -8 -d 3 ${recFile} 2>/dev/null | awk -v utc=${utcLabel:0:12} \
+  ( jt9 -8 -d 3 ${recFileName} 2>/dev/null | awk -v unixtime=$unixtime \
     '($6 ~ /^R|^U[A-I]|^D[0-1]/) && ($7 ~ /^U[R-Z]|^E[M-O]|^D[0-1]/) {
-     print utc " " $0 }' >>ft8vata.txt 2>/dev/null ) &
+     print unixtime " " $0 }' >>ft8vata.txt 2>/dev/null ) &
 
 done >/dev/null 2>&1
 
