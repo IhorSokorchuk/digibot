@@ -10,26 +10,19 @@
 # 1.840 3.573 5.357 7.074 10.136 14.074 18.100 
 # 21.074 24.915 28.074 50.313 50.323
 
-trap 'exit' SIGINT
-trap 'rm rec_?s.wav' EXIT
-
-while :; do
 
   decisecUnixtime=0
-  while (( ((decisecUnixtime % 600) % 150) < 145 )); do
+  while (( ((decisecUnixtime % 600) % 150) < 147 )); do
     sleep 0.1
     decisecUnixtime="$(date -u '+%s%1N')"
   done
 
   unixtime=$(( (decisecUnixtime / 10) + 1 ))
-  recFileName="record_$(( unixtime % 10 ))s.wav"
+  recFileName="tmp_$(( unixtime % 10 ))s.wav"
 
-  arecord -q -r 12000 -f S16_LE -c 1 -d 14 ${recFileName}
+  echo -n "${recFileName} "; date
 
-  ( jt9 -8 -d 3 ${recFileName} 2>/dev/null | awk -v unixtime=$unixtime \
-    '($6 ~ /^R|^U[A-I]|^D[0-1]/) && ($7 ~ /^U[R-Z]|^E[M-O]|^D[0-1]/) {
-     print unixtime " " $0 }' >>ft8vata.txt 2>/dev/null ) &
-
-done >/dev/null 2>&1
+  arecord -r 12000 -f S16_LE -c 1 -d 14 ${recFileName}
+  jt9 -8 -d 3 ${recFileName}
 
 # EOF
