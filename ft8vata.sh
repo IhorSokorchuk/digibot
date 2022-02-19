@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# ft8vata.sh - FT8 skimmer, version 2022.02.17-1 beta
+# ft8vata.sh - FT8 skimmer, version 2022.02.19-1 beta
 # Copyright (C) 2022, Ihor Sokorchuk, UR3LCM <ur3lcm@gmail.com>
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software; you are free to change and redistribute it.
@@ -17,11 +17,11 @@ while :; do
 
   decisecUnixtime=0
   while (( ((decisecUnixtime % 600) % 150) < 147 )); do
-    decisecUnixtime="$(date -u '+%s%1N')"
-    unixtime=$(( (decisecUnixtime / 10) + 1 ))
     sleep 0.1
+    decisecUnixtime="$(date -u '+%s%1N')"
   done
 
+  unixtime=$(( (decisecUnixtime / 10) + 1 ))
   recFileName="tmp_$(( unixtime % 10 )).wav"
 
   arecord -q -r 12000 -f S16_LE -c 1 -d 14 ${recFileName}
